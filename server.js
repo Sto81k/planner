@@ -13,6 +13,8 @@ import goalRoutes from './routes/goals.js';       // <--- ДОДАНО
 
 dotenv.config();
 
+import './bot.js';
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 

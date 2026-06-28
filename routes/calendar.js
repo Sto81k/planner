@@ -62,20 +62,23 @@ router.get('/events/shared/:email', async (req, res) => {
   } catch (error) { res.status(500).json({ message: 'Помилка' }); }
 });
 
-// Створити нову подію
+// Створити нову подію (підтримує як одну, так і масив для повторюваних)
 router.post('/events', async (req, res) => {
   try {
-    const eventData = { ...req.body, userId: req.user };
-
-    // ФІКС: якщо категорія є порожнім рядком або не валідним ID, записуємо null
-    if (eventData.categoryId === '' || eventData.categoryId === 'other' || eventData.categoryId === 'Інше') {
-      eventData.categoryId = null;
+    // Якщо прийшов масив подій (серія)
+    if (Array.isArray(req.body)) {
+      const eventsWithUser = req.body.map(ev => ({ ...ev, userId: req.user }));
+      const savedEvents = await Event.insertMany(eventsWithUser);
+      return res.status(201).json(savedEvents);
+    } 
+    // Якщо прийшла одна подія
+    else {
+      const newEvent = new Event({ ...req.body, userId: req.user });
+      const saved = await newEvent.save();
+      return res.status(201).json(saved);
     }
-
-    const newEvent = new Event(eventData);
-    const saved = await newEvent.save();
-    res.status(201).json(saved);
   } catch (error) { 
+    console.error(error);
     res.status(500).json({ message: 'Помилка створення події' }); 
   }
 });

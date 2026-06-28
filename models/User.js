@@ -2,24 +2,13 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true, // Email має бути унікальним
-      trim: true,
-      lowercase: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, trim: true, lowercase: true },
+    password: { type: String, required: true },
+    // ДОДАНО: Поле для прив'язки акаунта до Telegram
+    telegramChatId: { type: String, default: null } 
   },
-  { timestamps: true } // Автоматично додасть createdAt та updatedAt
+  { timestamps: true }
 );
 
 export default mongoose.model('User', userSchema);
